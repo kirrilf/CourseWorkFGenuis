@@ -463,7 +463,7 @@ void changeStudent() {
 void fileWrite(int countGrop) {
 	ofstream File; 
 
-	File.open("test.txt"); 
+	File.open("test.dat", ios::binary); 
 
 	if (!File.is_open()) {
 		cout << "ERROR";
@@ -471,25 +471,35 @@ void fileWrite(int countGrop) {
 	}
 	group *temp;
 	temp = firstElementGroup;
-	File << countGrop << " ";
-	//File.write((char*)&countGrop, sizeof(int));
+	//File << countGrop << " ";
+	File.write((char*)&countGrop, sizeof(int));
 	while (temp){
-		File << temp->numGroup << " " << temp->count << " ";
+		//File << temp->numGroup << " " << temp->count << " ";
+		File.write((char*)&temp->numGroup, sizeof(int));
+		File.write((char*)&temp->count, sizeof(int));
 		studentG *tmp;
 		tmp = temp->studentFirst;
 		while (tmp) {
-			File << tmp->sourname << " " << tmp->name << " " << tmp->patronymic << " ";
-			for (int i = 0; i < 5; i++) {
+			//File << tmp->sourname << " " << tmp->name << " " << tmp->patronymic << " ";
+			File.write((char*)tmp->sourname, sizeof(tmp->sourname));
+			File.write((char*)tmp->name, sizeof(tmp->name));
+			File.write((char*)tmp->patronymic, sizeof(tmp->patronymic));
+
+			/*for (int i = 0; i < 5; i++) {
 				File << tmp->semesterGrades[i] << " ";
-			}
-			File << tmp->finance << " " << tmp->budgetOrContract<< " ";
+			}*/
+			File.write((char*)tmp->semesterGrades, sizeof(int[5]));
+			//File << tmp->finance << " " << tmp->budgetOrContract<< " ";
+			File.write((char*)&tmp->finance, sizeof(int));
+			File.write((char*)&tmp->budgetOrContract, sizeof(bool));
+
 
 			tmp = tmp->next;
 		}
 
 		temp = temp->next;
 	}
-
+	
 
 
 
@@ -508,7 +518,7 @@ int fileRead() {
 
 	ifstream File;
 
-	File.open("test.txt");
+	File.open("test.dat", ios::binary);
 
 	if (!File.is_open()) {
 		cout << "ERROR";
@@ -518,15 +528,15 @@ int fileRead() {
 	deleteAllStudent();
 	deleteAllGroup();
 	int countGrop = 0;
-	File >> countGrop;
-	//File.read((char*)&countGrop, sizeof(int));
+	//File >> countGrop;
+	File.read((char*)&countGrop, sizeof(int));
 
-	cout << countGrop;
-	system("pause");
 
 	for (int i = 0; i < countGrop; i++) {
 		int numGroup, count;
-		File >> numGroup >> count;
+		//File >> numGroup >> count;
+		File.read((char*)&numGroup, sizeof(int));
+		File.read((char*)&count, sizeof(int));
 		addCreateGroup(numGroup);
 		for (int j = 0; j < count; j++) {
 			char *sourname = new char[50];
@@ -535,19 +545,25 @@ int fileRead() {
 			int *semesterGrades = new int[5];
 			bool budgetOrContract;
 			int finance;
-			File >> sourname;
-			File >> name;
-			File >> patronymic;
-			for (int i = 0; i < 5; i++) {
-				File >> semesterGrades[i];
-			}
-			File >> finance;
-			File >> budgetOrContract;
+			//File >> sourname;
+			//File >> name;
+			//File >> patronymic;
+			File.read((char*)sourname, sizeof(sourname));
+			File.read((char*)name, sizeof(name));
+			File.read((char*)patronymic, sizeof(patronymic));
+			File.read((char*)semesterGrades, sizeof(int[5]));
+			//for (int i = 0; i < 5; i++) {
+			//	File >> semesterGrades[i];
+			//}
+			//File >> finance;
+			File.read((char*)&finance, sizeof(finance));
+			//File >> budgetOrContract;
+			File.read((char*)&budgetOrContract, sizeof(budgetOrContract));
 			addStudent(numGroup, sourname, name, patronymic, semesterGrades, budgetOrContract, finance);
 		}
 
 	}
-
+	
 
 
 
@@ -582,7 +598,7 @@ void showGroup() {
 	group *temp;
 	temp = firstElementGroup;
 	while (temp) {
-		cout << "Num Group:" << temp->numGroup << "    Count:" << temp->count;
+		cout << "Num Group:" << temp->numGroup << "    Count:" << temp->count << endl;
 		showStudents(temp->studentFirst);
 		temp = temp->next;
 	}
