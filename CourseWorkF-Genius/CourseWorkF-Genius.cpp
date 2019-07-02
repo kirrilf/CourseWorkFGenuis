@@ -17,7 +17,7 @@ struct studentG
 	int *semesterGrades = new int[5];
 	bool budgetOrContract; //0 - budget, 1 - contract
 	int finance;
-	int proc = 0;
+	
 
 	studentG *next;
 	studentG *previous;
@@ -29,8 +29,6 @@ struct group
 {
 	int numGroup;
 	int count = 0;
-	int proc2 = 0;
-	int procK = 0;
 	studentG *studentFirst = NULL;
 	studentG *studentLast = NULL;
 	group *next;
@@ -113,121 +111,6 @@ void addCreateGroup(int numGroup){
 	}
 
 }
-
-void sort(studentG *Head) {
-	studentG *left = Head;                
-	studentG *right = Head->next;          
-
-	studentG *temp = new studentG;              
-	while (left->next) {                 
-		while (right) {              
-			if ((left->proc) < (right->proc)) {       
-
-				temp->finance = left->finance; 
-				temp->budgetOrContract = left->budgetOrContract;
-				temp->name = left->name;
-				temp->patronymic = left->patronymic;
-				temp->sourname = left->sourname;
-				temp->semesterGrades = left->semesterGrades;
-				temp->proc = left->proc;
-				
-				
-				left->finance = right->finance; 
-				left->budgetOrContract = right->budgetOrContract;
-				left->name = right->name;
-				left->patronymic = right->patronymic;
-				left->sourname = right->sourname;
-				left->semesterGrades = right->semesterGrades;
-				left->proc = right->proc;
-
-
-				right->finance = temp->finance;    
-				right->budgetOrContract = temp->budgetOrContract;
-				right->name = temp->name;
-				right->patronymic = temp->patronymic;
-				right->sourname = temp->sourname;
-				right->semesterGrades = temp->semesterGrades;
-				right->proc = temp->proc;
-
-			}
-			right = right->next;                    
-		}
-		left = left->next;                              
-		right = left->next;                             
-	}
-}
-
-void addPro(studentG *begin) {
-	studentG *temp;
-	temp = begin;
-	while (temp) {
-		int k = 0;
-		for (int i = 0; i < 5; i++) {
-			k += temp->semesterGrades[i];
-		}
-		temp->proc = k * 4;
-		temp = temp->next;
-	}
-
-}
-
-void sortStudent() {
-	group *temp;
-	temp = firstElementGroup;
-	while (temp) {
-		
-		addPro(temp->studentFirst);
-		sort(temp->studentFirst);
-		temp = temp->next;
-	}
-
-}
-
-int two(studentG *begin) {
-	int proc2 = 0;
-
-	while (begin) {
-		bool no = true;
-		for (int i = 0; i < 5; i++) {
-			if (begin->semesterGrades[i] != 2) {
-				no = false;
-			}
-		}
-		if (no) {
-			proc2++;
-		}
-
-		begin = begin->next;
-	}
-	return proc2;
-}
-
-int bud(studentG *begin) {
-	int procK = 0;
-
-	while (begin) {
-		if (begin->budgetOrContract == false) {
-			procK++;
-		}
-
-		begin = begin->next;
-	}
-	return procK;
-}
-
-
-void addProc() {
-	group *temp;
-	temp = firstElementGroup;
-	while (temp) {
-		temp->proc2 = two(temp->studentFirst);
-		temp->procK = bud(temp->studentFirst);
-		temp = temp->next;
-	}
-
-}
-
-
 
 void addStudentToGroup() {
 	int numGroup;
@@ -589,6 +472,7 @@ void fileWrite(int countGrop) {
 	group *temp;
 	temp = firstElementGroup;
 	File << countGrop << " ";
+	//File.write((char*)&countGrop, sizeof(int));
 	while (temp){
 		File << temp->numGroup << " " << temp->count << " ";
 		studentG *tmp;
@@ -635,6 +519,11 @@ int fileRead() {
 	deleteAllGroup();
 	int countGrop = 0;
 	File >> countGrop;
+	//File.read((char*)&countGrop, sizeof(int));
+
+	cout << countGrop;
+	system("pause");
+
 	for (int i = 0; i < countGrop; i++) {
 		int numGroup, count;
 		File >> numGroup >> count;
@@ -693,7 +582,7 @@ void showGroup() {
 	group *temp;
 	temp = firstElementGroup;
 	while (temp) {
-		cout <<	"Num Group:" << temp->numGroup << "    Count:" <<temp->count << "    Proc 2:" << (temp->proc2*100)/temp->count << "    Proc Kontract:"  << (temp->procK*100)/temp->count<< endl;
+		cout << "Num Group:" << temp->numGroup << "    Count:" << temp->count;
 		showStudents(temp->studentFirst);
 		temp = temp->next;
 	}
@@ -714,8 +603,8 @@ int menu() {
 			E = "5 CHANGE                ",
 			F = "6 SHOW GROUP            ",
 			G = "7 FILE WRITE            ",
-			L = "8 FILE READ             ",
-			K = "9 SORT                  ";
+			L = "8 FILE READ             ";
+			
 			
 			
 			
@@ -732,7 +621,7 @@ int menu() {
 	cout << F << "\n";
 	cout << G << "\n";
 	cout << L << "\n";
-	cout << K << "\n";
+
 
 	
 
@@ -755,12 +644,12 @@ int menu() {
 		}
 
 
-		if (k == 10) {
+		if (k == 9) {
 			k = 1;
 		}
 
 		else if (k == 0) {
-			k = 9;
+			k = 8;
 		}
 
 		if (l == 13) {
@@ -792,9 +681,7 @@ int menu() {
 		else if (l == 56) {
 			return 8;
 		}
-		else if (l == 57) {
-			return 9;
-		}
+		
 
 		
 
@@ -809,7 +696,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 		
 		}
@@ -822,7 +709,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -835,7 +722,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -848,7 +735,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -861,7 +748,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -874,7 +761,7 @@ int menu() {
 			cout << F << "<---\n";
 			cout << G << "\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -887,7 +774,7 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "<---\n";
 			cout << L << "\n";
-			cout << K << "\n";
+			
 			
 			
 		}
@@ -900,23 +787,9 @@ int menu() {
 			cout << F << "\n";
 			cout << G << "\n";
 			cout << L << "<--\n";
-			cout << K << "\n";
-			
 			
 		}
-		else if (k == 9) {
-			cout << A << "\n";
-			cout << B << "\n";
-			cout << C << "\n";
-			cout << D << "\n";
-			cout << E << "\n";
-			cout << F << "\n";
-			cout << G << "\n";
-			cout << L << "\n";
-			cout << K << "<--\n";
-
-
-		}
+		
 	
 	}
 
@@ -953,10 +826,6 @@ void startMenu() {
 		}
 		else if (infoMenu == 8) {
 			countGrop = fileRead();
-		}
-		else if (infoMenu == 9) {
-			addProc();
-			sortStudent();
 		}
 		
 
